@@ -1,0 +1,290 @@
+<HTML>
+
+<HEAD>
+<TITLE>
+BINF3020 - Assignment 1
+</TITLE>
+</HEAD>
+
+<BODY>
+
+<H2 ALIGN="center">
+BINF3020 - Term 3, 2022
+</H2>
+
+<H3>
+Assignment 1 - Protein sequence evolution and alignment
+</H3>
+
+<H4>
+Allocation: the assignment is worth 20% of your final assessment.
+</H4>
+
+<P>
+The aim of this assignment is for you to write software in C, Java or
+Python (or other language ONLY by prior agreement with course convenor)
+and run it on biological sequence data to generate outputs which
+you will write up in a comprehensive report. Note: a key aim of this
+assignment is to be able to develop bioinformatics software "from
+scratch", so you are permitted to use bioinformatics-specific
+software libraries (such as BioJava or BioPython) in your code <b>only</b>
+for low-level operations such as reading and writing files in this assignment !
+
+<p>
+The assignment will test your understanding of some key concepts of
+evolutionary modelling and sequence alignment, your ability to translate
+these into working software, and will require you to demonstrate good
+written communication skills.
+
+<P>
+The assignment is structured to have three deliverable parts, as follows.
+
+<DL>
+<DT>
+Part 1
+<DD>
+implement a protein sequence evolution simulator [35% of assignment mark]
+<DT>
+Part 2 (alignment) <DD>
+implement optimal pairwise alignment by dynamic programming [45% of assignment mark] and 
+<DT>
+Part 2 (evaluation and report) <DD>
+<DD>
+run your software from Part 1 to simulate the evolution of a protein sequence over
+increasing evolutionary time, and run your alignment software from Part 2 to align the mutated
+sequences with the original, then write a report including a plot of
+percentage identity against evolution time and discuss your results.
+[20% of assignment mark]
+</DL>
+
+<P>
+Each part builds on the previous part and you should complete each
+part before moving on to the next.
+
+<P>
+The marking will be based on having a running program for each part
+and writing a proper report. Marks will also be given for good programming
+and writing style. Marks will be deducted for program bugs and other errors.
+
+<P>
+The standard warnings against plagiarism apply and will be enforced.
+In particular, you must not re-use or copy software from another student,
+or that you found on the Internet, in a textbook, or elsewhere to
+implement either parts 1 or 2 of this assignment.
+Doing so will simply deprive you of the essential learning experience
+that can only come from solving a programming problem and building working
+code by yourself to implement your solution.
+
+<P>
+Penalties for late submission of assignment parts will be incurred at the
+rate of a reduction of 1 mark per day in the maximum possible mark for a
+part, up to the number of marks for that part.
+
+<HR>
+
+<H4>
+Part 1
+</H4>
+
+Description of the task:
+
+<P>
+You should download the <a href="./sample_seqs.zip">file</a> of sample amino acid
+sequences to help in development of your program.
+These sequences should be in separate files in FASTA format (see below). You also need
+to download the amino acid mutation matrix (see below) and add it to your
+code. This is an asymmetric
+20x20 matrix. A matrix entry M_i,j in column i and row j denotes the
+probability that the column amino acid will mutate to the row amino acid. 
+For ease of handling, the probabilities are expressed as counts per 10000.
+So "56" means the probability 0.0056 in this matrix. The columns and rows
+are labelled with a single letter amino acid code, as follows:
+
+<TABLE>
+<TR><TH> Code <TH> Abbreviation <TH> Amino acid
+<TR> <TD> A <TD> Ala <TD> alanine
+<TR> <TD> R <TD> Arg <TD> arginine
+<TR> <TD> N <TD> Asn <TD> asparagine
+<TR> <TD> D <TD> Asp <TD> aspartate
+<TR> <TD> C <TD> Cys <TD> cysteine
+<TR> <TD> Q <TD> Gln <TD> glutamine
+<TR> <TD> E <TD> Glu <TD> glutamate
+<TR> <TD> G <TD> Gly <TD> glycine
+<TR> <TD> H <TD> His <TD> histidine
+<TR> <TD> I <TD> Ile <TD> isoleucine
+<TR> <TD> L <TD> Leu <TD> leucine
+<TR> <TD> K <TD> Lys <TD> lysine
+<TR> <TD> M <TD> Met <TD> methionine
+<TR> <TD> F <TD> Phe <TD> phenylalanine
+<TR> <TD> P <TD> Pro <TD> proline
+<TR> <TD> S <TD> Ser <TD> serine
+<TR> <TD> T <TD> Thr <TD> threonine
+<TR> <TD> W <TD> Trp <TD> tryptophan
+<TR> <TD> Y <TD> Tyr <TD> tyrosine
+<TR> <TD> V <TD> Val <TD> valine
+</TABLE>
+
+N.B. this is a subset of the FASTA amino acid code letter set (it does not
+include B,U,Z,X,*,-).
+
+<P>
+<B>
+Amino acid mutation matrix:
+</B>
+
+<P>
+,A,R,N,D,C,Q,E,G,H,I,L,K,M,F,P,S,T,W,Y,V  <BR>
+A,9867,2,9,10,3,8,17,21,2,6,4,2,6,2,22,35,32,0,2,18 <BR>
+R,1,9914,1,0,1,10,0,0,10,3,1,19,4,1,4,6,1,8,0,1 <BR>
+N,4,1,9822,36,0,4,6,6,21,3,1,13,0,1,2,20,9,1,4,1 <BR>
+D,6,0,42,9859,0,6,53,6,4,1,0,3,0,0,1,5,3,0,0,1 <BR>
+C,1,1,0,0,9973,0,0,0,1,1,0,0,0,0,1,5,1,0,3,2 <BR>
+Q,3,9,4,5,0,9876,27,1,23,1,3,6,4,0,6,2,2,0,0,1 <BR>
+E,10,0,7,56,0,35,9865,4,2,3,1,4,1,0,3,4,2,0,1,2 <BR>
+G,21,1,12,11,1,3,7,9935,1,0,1,2,1,1,3,21,3,0,0,5 <BR>
+H,1,8,18,3,1,20,1,0,9913,0,1,1,0,2,3,1,1,1,4,1 <BR>
+I,2,2,3,1,2,1,2,0,0,9871,9,2,12,7,0,1,7,0,1,33 <BR>
+L,3,1,3,0,0,6,1,1,4,22,9947,2,45,13,3,1,3,4,2,15 <BR>
+K,2,37,25,6,0,12,7,2,2,4,1,9924,20,0,3,8,11,0,1,1 <BR>
+M,1,1,0,0,0,2,0,0,0,5,8,4,9875,1,0,1,2,0,0,4 <BR>
+F,1,1,1,0,0,0,0,1,2,8,6,0,4,9944,0,2,1,3,28,0 <BR>
+P,13,5,2,1,1,8,3,2,5,1,2,2,1,1,9924,12,4,0,0,2 <BR>
+S,28,11,34,7,11,4,6,16,2,2,1,7,4,3,17,9840,38,5,2,2 <BR>
+T,22,2,13,4,1,3,2,2,1,11,2,8,6,1,5,32,9869,0,2,9 <BR>
+W,0,2,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,9976,1,0 <BR>
+Y,1,0,3,0,3,0,1,0,4,1,1,0,0,21,0,1,1,2,9947,1 <BR>
+V,13,2,1,1,3,2,2,3,3,57,11,1,17,1,3,2,10,0,2,9901 <BR>
+,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000 <BR>
+
+<P>
+The evolutionary mutation model in this task is as follows. For each amino
+acid in the current sequence, its probability of mutating to any other amino
+acid is given by the appropriate entry in the mutation matrix. Note that we
+apply an independence assumption, namely that the mutation of any amino
+acid is a random event unaffected by any other amino acid in the sequence.
+The model is to be run for a fixed number of iterations, each corresponding
+to a "generation". The choice by "evolution" of a mutation in each amino acid
+is modelled by indexing into the mutation matrix using a random number. 
+The initial current sequence is given as input. At each step, the current
+sequence has each of its amino acids "mutated" with a certain probability.
+(Note that this mutation process does not <I>necessarily</I> cause the amino
+acid to change at every round of mutation. In fact, looking at the mutation
+matrix, it is likely that amino acids will change only rarely.) This new,
+mutated sequence then becomes the current sequence for the next generation.
+
+<P>
+The basic steps in your program will be to read in the initial sequence
+and run the evolutionary model based on the mutation matrix for 500 generations.
+The original sequence, plus all the mutated sequences generated, one per
+iteration, should be saved in a single output file in FASTA format. 
+The generation number should go in the description line preceding each sequence,
+with your initial sequence numbered 0, the first mutated sequence numbered 1
+and the final mutated sequence numbered 500.
+
+<P>
+<b>Inputs and Outputs:</b>
+<TABLE>
+<TR><TD> s0 <TD> your input sequence file containing the initial sequence
+in FASTA format
+<TR><TD> s501 <TD> the output file containing the initial sequence plus all
+500 mutated sequences in FASTA format
+</TABLE>
+
+You MUST assume that the I/O comes from stdin and goes to stdout. (Marks
+will be lost if this is not implemented correctly.) <BR>
+For Part 1 of the assignment, your program will be executed as follows: <BR>
+
+<P>
+<TT>
+% evolve < s0 > s501
+</TT>
+
+where <tt>s0</tt> is a sequence in valid FASTA format (<tt>s501</tt> is simply a text file capturing the output).
+<!--
+% align < sequences > alignments
+OR
+% evolve < sequence | align > alignments
+--> 
+
+<P>
+The only input and output routines you need are to read and write sequences in FASTA format.
+Design these correctly for Part 1 and you can re-use them in Part 2.
+
+<P>
+Your program should <b>report an error and halt</b> if the input is not in FASTA format or the sequence contains something other than the above 20 amino acid code letters.
+
+<P>
+Your program should <b>report an error and halt</b> if the input does not contain exactly one sequence in FASTA format.
+
+<P>
+<B>
+FASTA Sequence Format Description [restricted version, for this assignment]:
+</B>
+
+<P>
+A sequence in FASTA format begins with a single-line description,
+followed by lines of sequence data. The description line is distinguished
+from the sequence data by a greater-than (">") symbol in the first column.
+It is recommended that all lines of text be shorter than 80 characters in
+length. An example sequence in FASTA format is:
+
+<P>
+> description of the sequence <BR>
+CAKKRNWCGKNEDCCCPMKCIYAWYNQQGSCQTTITGLFKKC <BR>
+
+<P>
+More than one sequence can be included in the same file:
+
+<P>
+> description of initial sequence <BR>
+CAKKRNWCKKNEDCCCPMKCIYAWHNQQGSCQTTISGLFKKC <BR>
+> description of another sequence <BR>
+CAKKRNWCKKNEDCCCPMKCIYAWHNQQGSCQTTISGLFKKC <BR>
+> description of yet another sequence <BR>
+CAKKRNWCKKNEDCCCPMKCIYAWHNQQGSCQTTISGLFKKC <BR>
+
+
+
+<P>
+<B>
+Deadline:
+</B>
+<BR>
+You should submit Part 1 <U>by 23:59:59 on Sunday September 25, 2022.</U><BR>
+
+
+<P>
+<B>
+Submission:
+</B>
+<BR>
+Will be on Moodle (details to follow).
+
+<P>
+Your submission will be a single source file "evolve.c", "evolve.java" or "evolve.py" which should be adequately
+commented. <BR>
+
+<br>
+<b>NOTE:</b> be sure to test that your program works correctly on
+CSE machines running Linux <i>before</i> submitting it - you may lose
+marks if it does not work correctly on a CSE machine running Linux,
+e.g., one of the lab machines.
+
+<HR>
+
+<H4>
+Parts 2 & 3
+</H4>
+
+To be released.
+
+<HR>
+
+<table align=right>
+<tr><td><font size=-1>Last modified
+Mon 12 Sep 2022 13:10:16 AEST
+</font></td></tr>
+</table>
+
+</BODY>
+</HTML>
