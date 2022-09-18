@@ -44,7 +44,7 @@ for record in SeqIO.parse(sys.stdin, "fasta"):
     record.description = "0"
     SeqIO.write(record, sys.stdout, "fasta")
     
-    for i in range(501):
+    for i in range(500):
         iteration += 1
         newSeq = ""
         # For each amino acid, generate random num < 10000. 
