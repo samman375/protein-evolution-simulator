@@ -38,7 +38,7 @@ for record in SeqIO.parse(sys.stdin, "fasta"):
     if records > 1:
         sys.exit(f"Error: More than one sequence provided. Exiting.")
     
-    # Fromat and print original sequence
+    # Format and print original sequence
     iteration = 0
     record.id = ""
     record.description = "0"
