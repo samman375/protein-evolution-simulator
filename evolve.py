@@ -5,6 +5,9 @@ from Bio.SeqRecord import SeqRecord
 import pandas as pd
 import random
 
+# Uses Biopython v.1.79
+# Developed on MacOS v.12.5.1 
+
 AAMutationMatrix = [["A","R","N","D","C","Q","E","G","H","I","L","K","M","F","P","S","T","W","Y","V"],
 ["A","9867","2","9","10","3","8","17","21","2","6","4","2","6","2","22","35","32","0","2","18"],
 ["R","1","9914","1","0","1","10","0","0","10","3","1","19","4","1","4","6","1","8","0","1"],
